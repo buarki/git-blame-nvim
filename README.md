@@ -10,7 +10,7 @@ If you are using Lazy just add a plugin returning this one:
 {
     "buarki/git-blame-nvim",
     config = function()
-        require("git-blame").setup()
+        require("git_blame").setup()
     end
 }
 ```
