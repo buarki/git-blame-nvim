@@ -15,7 +15,7 @@ function M.get_git_blame()
     end
 
     local parts = vim.split(output[1], "%s+")
-    local hash = parts[1]
+    local hash = parts[1]:gsub("^%^", "")
     local author = parts[2]:gsub("[()]", "")
     local blame_msg = "🔍 Last edited by: " .. author .. " in commit " .. hash
 
