@@ -1,4 +1,4 @@
-name: tags release
+name: Auto Tag Release
 
 on:
   push:
@@ -7,26 +7,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:
+  tag:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
+          persist-credentials: true  # Ensures auth token is used for push
 
-      - name: Set up Node.js (needed for Semantic Release)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      - name: Get Latest Tag
+        id: get_tag
+        run: |
+          git fetch --tags
+          latest_tag=$(git tag --sort=-v:refname | head -n 1)
+          echo "Latest tag: $latest_tag"
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
-      - name: Install Semantic Release
-        run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+      - name: Calculate Next Version
+        id: next_version
+        run: |
+          if [[ -z "$latest_tag" ]]; then
+            next_version="v0.1.0"  # Start with v0.1.0 if no tags exist
+          else
+            next_version=$(echo $latest_tag | awk -F. '{printf "v%d.%d.%d", $1, $2, $3+1}')
+          fi
+          echo "Next version: $next_version"
+          echo "next_version=$next_version" >> $GITHUB_ENV
 
-      - name: Run Semantic Release
+      - name: Create and Push Tag
+        run: |
+          git tag $next_version
+          git push origin $next_version
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: semantic-release
 
 
