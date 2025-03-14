@@ -37,7 +37,7 @@ end
 
 function M.setup()
 
-    vim.api.nvim_set_keymap("n", "<Leader>gb", ":lua require('gitlens.git_blame').get_git_blame()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_set_keymap("n", "<Leader>gb", ":lua require('git_blame.git_blame').get_git_blame()<CR>", { noremap = true, silent = true })
 end
 
 return M
